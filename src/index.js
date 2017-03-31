@@ -86,8 +86,10 @@ const logoutAction = () => {
     }
 };
 
-const getSecretAction = (token) => (dispatch) => {
+const getSecretAction = () => (dispatch, getState) => {
     dispatch({type: 'secret.loading'})
+
+    const token = getState().auth.token;
 
     fetch('/api/secure', {headers: {'Authorization': 'JWT ' + token}})
         .then(x => x.json())
@@ -122,21 +124,27 @@ const store = compose(applyMiddleware(thunk, logger))(createStore)(reducers, get
 const AuthenticatedPage = (() => {
     class CComponent extends Component {
         componentWillMount() {
-            this.props.getSecretAction(this.props.token);
+            this.props.getSecretAction();
         }
 
         render() {
-            const {user, secret, loading} = this.props;
+            const {user, secret, loading, logoutAction, token} = this.props;
 
             return (
-                loading ? <span>Secret: loading</span> : <span>Secret: ${JSON.stringify(secret)}</span>
+                loading ? <span>Secret: loading</span> : (
+                    <div>
+                        <p>Token: ${token}</p>
+                        <p>Secret: ${JSON.stringify(secret)}</p>
+                        <p><a href="#" onClick={() => logoutAction()}>Logout</a></p>
+                    </div>
+                )
             );
         }
     }
 
     const enhance = connect(
         (state) => ({user: state.auth.user, secret: state.secret.data, loading: state.secret.loading, token: state.auth.token}),
-        {getSecretAction}
+        {getSecretAction, logoutAction}
     );
 
     return enhance(CComponent);
