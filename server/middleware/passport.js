@@ -20,7 +20,7 @@ passport.use(new FacebookStrategy({
     clientSecret: config.facebook.appSecret,
     callbackURL: config.facebook.callbackUrl
 }, (accessToken, refreshToken, profile, done) => {
-    findOrCreate('facebook', profile.fbid, profile.displayName, profile._json, { accessToken, refreshToken })
+    findOrCreate('facebook', profile.id, profile.displayName, profile._json, { accessToken, refreshToken })
         .then((user) => done(null, user))
         .catch((err) => done(err, false));
 }));
