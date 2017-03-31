@@ -70,13 +70,21 @@ const loginAction = (provider) => (dispatch) => {
     window.onLogin = (token, user) => {
         window.onLogin = null;
 
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+
         dispatch({type: 'authenticated', payload: {token, user}});
     }
 };
 
-const logoutAction = () => ({
-    type: 'logout'
-});
+const logoutAction = () => {
+    localStorage.setItem('token', null);
+    localStorage.setItem('user', null);
+
+    return {
+        type: 'logout'
+    }
+};
 
 const getSecretAction = (token) => (dispatch) => {
     dispatch({type: 'secret.loading'})
@@ -84,10 +92,32 @@ const getSecretAction = (token) => (dispatch) => {
     fetch('/api/secure', {headers: {'Authorization': 'JWT ' + token}})
         .then(x => x.json())
         .then(data => dispatch({type: 'secret.success', payload: {data}}))
-        .catch(err => console.error(err))
+        .catch(err => {
+            console.error(err);
+
+            dispatch(logoutAction());
+        })
 }
 
-const store = compose(applyMiddleware(thunk, logger))(createStore)(reducers, {});
+const getState = () => {
+    try {
+        if (localStorage.getItem('token') == null)
+            return {};
+
+        return {
+            auth: {
+                authenticated: true,
+                authenticating: false,
+                token: localStorage.getItem('token'),
+                user: JSON.parse(localStorage.getItem('user'))
+            }
+        }
+    } catch(e) {
+        return {};
+    }
+}
+
+const store = compose(applyMiddleware(thunk, logger))(createStore)(reducers, getState());
 
 const AuthenticatedPage = (() => {
     class CComponent extends Component {

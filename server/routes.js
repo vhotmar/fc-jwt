@@ -38,8 +38,6 @@ export default (app) => {
     app.get('/auth/facebook/callback', jwtResponse('facebook'));
 
     app.get('/api/secure', auth(), (req, res) => {
-        console.log(req, res);
-
         res.json({
             message: 'Success :)',
             user: req.user

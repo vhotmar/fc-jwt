@@ -28,7 +28,8 @@
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-logger": "^3.0.1",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "transform-runtime": "^0.0.0"
   },
   "devDependencies": {
     "nwb": "0.15.x"
