@@ -30,7 +30,14 @@ catch (e) {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(errorHandler());
+
+app.use((err, req, res, next) => {
+  console.log(err);
+
+  res.status(500).send({
+    error: err
+  })
+})
 
 passportMiddleware(app);
 routes(app);

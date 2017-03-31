@@ -13,7 +13,7 @@ export default {
     },
     steam: {
         returnUrl: `${CALLBACK_URL}/auth/steam/return`,
-        realm: `http://${DOMAIN}:${PORT}/`,
+        realm: `${CALLBACK_URL}`,
         apiKey: process.env.STEAM_API_KEY || '706A63DB54661CEFD21620FB0CDE6586'
     },
     facebook: {
