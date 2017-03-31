@@ -65,7 +65,7 @@ const loginAction = (provider) => (dispatch) => {
 
     dispatch({type: 'authenticating'});
 
-    window.open(`/auth/${provider}`, '_blank');
+    window.open(`/auth/${provider}`, '_blank', 'location=yes,scrollbars=yes,status=yes');
 
     window.onLogin = (token, user) => {
         window.onLogin = null;
