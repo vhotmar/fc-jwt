@@ -1,6 +1,5 @@
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
-import config from './config';
+import {generateToken} from './auth';
 
 export default (app) => {
     function jwtResponse(provider) {
@@ -9,9 +8,7 @@ export default (app) => {
                 if (err) return next(err);
                 if (!user) return next({error: 'User does not exists'});
 
-                const token = jwt.sign({id: user._id}, config.secret, config.jwt);
-
-                res.send(`
+                const sendResponse = (user) => res.send(`
                     <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -19,10 +16,21 @@ export default (app) => {
                         <title>LoggedIn</title>
                     </head>
                     <body>
-                        <script>window.opener.onLogin(${JSON.stringify(token)}, ${JSON.stringify(user)}); window.close();</script>
+                        <script>window.opener.onLogin(${JSON.stringify(user.token)}, ${JSON.stringify(user)}); window.close();</script>
                     </body>
                     </html>
-                `)
+                `);
+
+                if (user.token == null) {
+                    user.token = generateToken(user);
+
+                    user
+                        .save()
+                        .then(sendResponse)
+                        .catch(next);
+                } else {
+                    sendResponse(user);
+                }
             })(req, res, next);
         }
     }

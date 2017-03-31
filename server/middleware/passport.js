@@ -28,11 +28,22 @@ passport.use(new FacebookStrategy({
 passport.use(new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeader(),
     ...config.jwt,
-    secretOrKey: config.secret
-}, (payload, done) => {
+    secretOrKey: config.secret,
+    passReqToCallback: true
+}, (req, payload, done) => {
     User
         .findById(payload.id).exec()
-        .then((user) => user ? done(null, user) : done(null, false))
+        .then((user) => {
+            if (user) {
+                if (ExtractJwt.fromAuthHeader()(req) != user.token) {
+                    done(null, false);
+                } else {
+                    done(null, user)
+                }
+            } else {
+                done(null, false)
+            } 
+        })
         .catch((err) => done(err, false))
 }));
 
