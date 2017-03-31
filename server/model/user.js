@@ -41,6 +41,12 @@ export function findOrCreate(provider, id, name, profile = {}, additional = {}) 
                         auth: { [provider]: { ...additional, id, profile } }
                     });
             } else {
+                if (user.token == null) {
+                    user.token = generateToken(user);
+
+                    return user.save();
+                }
+
                 return user;
             }
         });
