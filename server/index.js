@@ -20,7 +20,7 @@ try {
   fs.statSync('dist');
   console.log('Serving static build from dist/');
   console.log('Run `npm run clean` to return to development mode');
-  app.use('/', express.static(path.join(__dirname, 'dist')));
+  app.use('/', express.static(path.join(__dirname, '../dist')));
 }
 catch (e) {
   console.log('Serving development build with nwb middleware');
@@ -34,6 +34,7 @@ app.use(errorHandler());
 
 passportMiddleware(app);
 routes(app);
+
 
 mongoose.connect(config.mongodb);
 
